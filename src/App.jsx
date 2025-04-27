@@ -1,34 +1,36 @@
 import React, { useState, useEffect } from "react";
+import Gallery from "./components/Gallery";
 
 const App = () => {
-  const [tours, setTours] = useState([]); // State for storing tours
-  const [loading, setLoading] = useState(true); // State for loading status
-  const [error, setError] = useState(null); // State for error message
+  const [tours, setTours] = useState([]);
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState(null);
 
-  // Function to fetch tours
   const fetchTours = async () => {
     setLoading(true);
-    setError(null); // Clear any previous error
+    setError(null);
     try {
-      const response = await fetch("https://course-api.com/react-tours-project");
+      const response = await fetch("https://www.course-api.com/react-tours-project");
       if (!response.ok) {
         throw new Error(`HTTP error! Status: ${response.status}`);
       }
       const data = await response.json();
-      setTours(data); // Update tours state with fetched data
+      setTours(data);
     } catch (err) {
-      setError(err.message); // Update error state
+      setError(err.message);
     } finally {
-      setLoading(false); // End loading
+      setLoading(false);
     }
   };
 
-  // useEffect to fetch tours on component mount
   useEffect(() => {
     fetchTours();
   }, []);
 
-  // Conditional Rendering
+  const handleRemove = (id) => {
+    setTours(tours.filter((tour) => tour.id !== id));
+  };
+
   if (loading) {
     return <h2>Loading...</h2>;
   }
@@ -45,15 +47,7 @@ const App = () => {
   return (
     <div>
       <h1>Tours</h1>
-      <ul>
-        {tours.map((tour) => (
-          <li key={tour.id}>
-            <h2>{tour.name}</h2>
-            <p>{tour.info}</p>
-            <p>Price: ${tour.price}</p>
-          </li>
-        ))}
-      </ul>
+      <Gallery tours={tours} onRemove={handleRemove} />
     </div>
   );
 };
